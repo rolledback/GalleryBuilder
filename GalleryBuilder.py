@@ -5,6 +5,9 @@ from PIL import Image
 
 img_types = [".jpg", ".png", ".gif", ".bmp"]
 
+def log(string):
+   print("--[LOG]--" + string)
+
 def make_img_tag(file_name, dimensions = None):
     tag = ""
     if(dimensions != None):
@@ -50,7 +53,7 @@ def traverse_dirs(current_dir):
         num_pics = 0
         folder_size = 0
         for d in dirs:
-            print "--[LOG]-- Creating href link for: " + d
+            log("Creating href link for: " + d)
             html_file = make_dir_link(d) + html_file
         for f in files:
             if(is_image_file(f)):
@@ -58,25 +61,25 @@ def traverse_dirs(current_dir):
                     im = Image.open(root + "/" + f)
                     html_file = html_file + make_img_tag(f, get_size(im.size))
                 except Exception:
-                    print "--[LOG]-- Unable to resize: " + f
+                    log("Unable to resize: " + f)
                     html_file = html_file + make_img_tag(f)
                 num_pics = num_pics + 1
                 folder_size = folder_size + os.stat(root + "/" + f).st_size
             elif f == "index.html":
                 os.remove(root + "/" + f)
             else:
-                print "--[LOG]-- Creating href link for: " + f
+                log("Creating href link for: " + f)
                 html_file = make_link_tag(f)+ html_file
         if(html_file != ""):
             write_gallery(root, html_file)
             html_file = ""
-            print "--[LOG]-- Found " + str(num_pics) + " (" + str(folder_size / 1000000) + "MB) pictures in " + root
+            log("Found " + str(num_pics) + " (" + str(folder_size / 1000000) + "MB) pictures in " + root)
         total_images = total_images + num_pics
         total_size = total_size + folder_size
-    print "--[LOG]-- Build done, found " + str(total_images) + " (" + str(total_size/ 1000000) + "MB) images"
+    log("Build done, found " + str(total_images) + " (" + str(total_size/ 1000000) + "MB) images")
 
 if __name__ == "__main__":
     sys.stdout = open('log.txt', 'a')
-    print "--[LOG]-- " + time.strftime("%d/%m/%Y")
+    log(time.strftime("%d/%m/%Y"))
     traverse_dirs(os.path.dirname(os.path.abspath(__file__)))
     print ''
